@@ -23,6 +23,7 @@
 #
 # ******************************************************************************
 
+import os
 import time
 import logging
 import tkinter
@@ -40,6 +41,9 @@ from zyngine import zynthian_controller
 
 
 class zynthian_gui_base(tkinter.Frame):
+
+    ui_dir = os.environ.get('ZYNTHIAN_UI_DIR', "/zynthian/zynthian-ui")
+
     # Default buttonbar config (touchwidget)
     buttonbar_config = []
 
@@ -833,7 +837,7 @@ class zynthian_gui_base(tkinter.Frame):
             if self.dscroll_select_path():
                 zynthian_gui_config.top.after(1000, self.cb_scroll_select_path)
                 return
-        zynthian_gui_config.top.after(100, self.cb_scroll_select_path)
+        zynthian_gui_config.top.after(50, self.cb_scroll_select_path)
 
     def dscroll_select_path(self):
         if self.shown:

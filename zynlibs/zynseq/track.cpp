@@ -168,7 +168,7 @@ SEQ_EVENT* Track::getEvent() {
         // Have not yet started to interpolate value
         if (m_nEventValue == -1) {
             // Note Play Chance
-            int playChance = int(RAND_MAX * pPattern->getPlayChance() * pEvent->getPlayChance() / 100.0);
+            unsigned playChance = unsigned(RAND_MAX * pPattern->getPlayChance() * pEvent->getPlayChance() / 100.0);
             if (playChance < RAND_MAX && playChance < rand()) {
                 m_nEventValue = pEvent->getValue2end();
                 seqEvent.msg.command = 0xFE;
@@ -178,6 +178,11 @@ SEQ_EVENT* Track::getEvent() {
             m_nEventValue = pEvent->getValue2start();
             // Recorded Offset (fraction of step => float)
             m_fEventOffset = pEvent->getOffset();
+            // Real-time quantization (step quantization => TODO quantize to step divisors: 1/2, 1/3, 1/4, 1/6, 1/8, ...)
+            if (pPattern->getQuantizeNotes()) {
+            	if (m_fEventOffset > 0.5) m_fEventOffset = 1.0;
+            	else m_fEventOffset = 0.0;
+			}
             // Swing => Add to offset
             uint32_t swingDiv = pPattern->getSwingDiv();
             float swingAmount = pPattern->getSwingAmount();
@@ -208,8 +213,8 @@ SEQ_EVENT* Track::getEvent() {
                     m_nEventValue = pEvent->getValue2end();
             } else
                 m_nEventValue = pEvent->getValue2end(); //!@todo Currently just move straight to end value but should interpolate for CC
-            // fprintf(stderr, "Scheduling note off. Event duration: %u, clocks per step: %u, samples per clock: %u\n", pEvent->getDuration(),
-            // pPattern->getClocksPerStep(), m_nSamplePerClock);
+            //fprintf(stderr, "Scheduling note off. Event duration: %u, clocks per step: %u, samples per clock: %u\n", pEvent->getDuration(),
+            //        pPattern->getClocksPerStep(), m_dSamplesPerClock);
         }
         seqEvent.msg.value1 = pEvent->getValue1start();
         // Velocity humanization

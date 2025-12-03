@@ -43,8 +43,7 @@ class zynmixer(zynthian_engine):
     # Function to initialize library
     def __init__(self):
         super().__init__()
-        self.lib_zynmixer = ctypes.cdll.LoadLibrary(
-            "/zynthian/zynthian-ui/zynlibs/zynmixer/build/libzynmixer.so")
+        self.lib_zynmixer = ctypes.cdll.LoadLibrary(f"{self.ui_dir}/zynlibs/zynmixer/build/libzynmixer.so")
         self.lib_zynmixer.init()
 
         self.lib_zynmixer.setLevel.argtypes = [ctypes.c_uint8, ctypes.c_float]
@@ -119,6 +118,7 @@ class zynmixer(zynthian_engine):
                     'value_max': 1.0,
                     'value_default': 0.8,
                     'value': self.get_level(i),
+                    'nudge_factor': 0.005,
                     'graph_path': [i, 'level']
                 }),
                 'balance': zynthian_controller(self, 'balance', {
@@ -127,6 +127,7 @@ class zynmixer(zynthian_engine):
                     'value_max': 1.0,
                     'value_default': 0.0,
                     'value': self.get_balance(i),
+                    'nudge_factor': 0.01,
                     'graph_path': [i, 'balance']
                 }),
                 'mute': zynthian_controller(self, 'mute', {
